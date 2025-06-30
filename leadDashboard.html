@@ -1,0 +1,84 @@
+<template>
+    <lightning-card title="Lead Dashboard" icon-name="standard:lead">
+        <div class="slds-p-around_medium">
+            <!-- Filters Section -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input 
+                        type="range" 
+                        label="Minimum Score" 
+                        value={scoreFilter} 
+                        min="0" 
+                        max="100" 
+                        onchange={handleScoreChange}>
+                    </lightning-input>
+                    <div class="slds-text-body_small slds-text-color_weak">
+                        Current: {scoreFilter}
+                    </div>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-combobox
+                        label="Industry Filter"
+                        value={industryFilter}
+                        options={industryOptions}
+                        onchange={handleIndustryChange}>
+                    </lightning-combobox>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-3">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input 
+                                type="checkbox" 
+                                label="Show Qualified Only" 
+                                checked={qualifiedOnly} 
+                                onchange={handleQualifiedChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Summary -->
+            <div class="slds-p-top_medium slds-p-bottom_small">
+                <lightning-badge label={resultsLabel} class="slds-m-right_small"></lightning-badge>
+                <template if:true={hasQualifiedLeads}>
+                    <lightning-badge label={qualifiedLabel} variant="success"></lightning-badge>
+                </template>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-is-relative slds-p-around_large">
+                <lightning-spinner alternative-text="Loading leads..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Data Table -->
+        <template if:false={isLoading}>
+            <template if:true={hasLeads}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={filteredLeads}
+                    columns={columns}
+                    hide-checkbox-column="true"
+                    onrowaction={handleRowAction}
+                    show-row-number-column="true">
+                </lightning-datatable>
+            </template>
+            
+            <!-- Empty State -->
+            <template if:false={hasLeads}>
+                <div class="slds-text-align_center slds-p-around_large">
+                    <lightning-icon icon-name="standard:lead" size="large" class="slds-m-bottom_small"></lightning-icon>
+                    <h3 class="slds-text-heading_medium">No leads found</h3>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        Try adjusting your filters or check back later for new qualified leads.
+                    </p>
+                </div>
+            </template>
+        </template>
+    </lightning-card>
+</template>
